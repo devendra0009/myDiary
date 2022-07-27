@@ -1,121 +1,110 @@
-import React, { useState } from 'react'
-import NoteContext from './NoteContext'
+import React, { useState } from "react";
+import NoteContext from "./NoteContext";
 
 //defining states here that we want to use anywhere directly
 
 const NoteStates = (props) => {
-    const notesInitial=[
-      {
-        "_id": "62d6bd382ac1be78aaad761f",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": "3rd title",
-        "description": "this is my first note",
-        "tag": "noob",
-        "date": "2022-07-19T14:18:32.661Z",
-        "__v": 0
-      },
-      {
-        "_id": "62d90409d806ddab340b9f61",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": "pdaai krni hai",
-        "description": "code with harry vido krna hai",
-        "tag": "study",
-        "date": "2022-07-21T07:45:13.849Z",
-        "__v": 0
-      },
-      {
-        "_id": "62d90409d806ddab340b9f61",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": "sona hai",
-        "description": "10bje se phle",
-        "tag": "sleeping",
-        "date": "2022-07-21T07:45:13.849Z",
-        "__v": 0
-      },
-      {
-        "_id": "62d90409d806ddab340b9f61",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": "gym krna hai",
-        "description": "6bje gym jana hai",
-        "tag": "gym",
-        "date": "2022-07-21T07:45:13.849Z",
-        "__v": 0
-      },
-      {
-        "_id": "62d6bd382ac1be78aaad761f",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": "3rd title",
-        "description": "this is my first note",
-        "tag": "noob",
-        "date": "2022-07-19T14:18:32.661Z",
-        "__v": 0
-      },
-      {
-        "_id": "62d90409d806ddab340b9f61",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": "pdaai krni hai",
-        "description": "code with harry vido krna hai",
-        "tag": "study",
-        "date": "2022-07-21T07:45:13.849Z",
-        "__v": 0
-      },
-      {
-        "_id": "62d90409d806ddab340b9f61",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": "sona hai",
-        "description": "10bje se phle",
-        "tag": "sleeping",
-        "date": "2022-07-21T07:45:13.849Z",
-        "__v": 0
-      },
-      {
-        "_id": "62d90409d806ddab340b9f61",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": "gym krna hai",
-        "description": "6bje gym jana hai",
-        "tag": "gym",
-        "date": "2022-07-21T07:45:13.849Z",
-        "__v": 0
-      },
-    ]
+  const host = "http://localhost:5000";
+  const notesInitial = [];
 
-    const [notes,setNotes]=useState(notesInitial)  //so as to add or delete note from notes array
+  const [notes, setNotes] = useState(notesInitial); //so as to add or delete note from notes array
 
-    //add a note
-    const addNote=({title,description,tag})=>{
-      console.log('adding a note');
-      let note={
-        "_id": "62d90409d806ddab340b9f61",
-        "user": "62d6ba50ad012f0f6d82797b",
-        "title": title,
-        "description": description,
-        "tag": tag,
-        "date": "2022-07-21T07:45:13.849Z",
-        "__v": 0
+  //Fetch notes
+  const fetchNotes = async () => {
+    //Api Call
+    const response = await fetch(`${host}/api/notes/fetchallnotes`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem('token'),
       }
-      setNotes(notes.concat(note))
-      console.log(notes);
+    });
+    const note = await response.json(); //yha json me mjhe new notes vala array milra hoga by fetch all notes request
+    console.log(note);
+    setNotes(note);
+  };
+
+  //Add a note
+  const addNote = async (title, description, tag) => {
+    console.log("adding a note");
+
+    //Api Call
+    const response = await fetch(`${host}/api/notes/addnote`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem('token'),
+      },
+      body: JSON.stringify({ title, description, tag }), // body data type must match "Content-Type" header
+      //body me inputted title description and tag daldia or post krdia in database
+    });
+    
+    const note = await response.json(); 
+    console.log(notes);
+    setNotes(notes.concat(note));
+  };
+
+  //Delete a note
+  const deleteNote = async (id) => {
+    console.log("deleting..." + id);
+
+    //Api Call
+    const response = await fetch(`${host}/api/notes/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem('token'),
+      },
+    });
+
+    const json = await response.json(); 
+    console.log(json);
+
+    //use filter method to remove the note with the id passed
+    const newNotes = notes.filter((note) => note._id !== id); //so filter method pure notes array ko traverse krega or jin-jin note ki id not equal hai id given k un-unko ek array me dalkr vo array return krdega or hm us array ko setNotes me daldege
+    setNotes(newNotes);
+    
+  };
+
+  //Edit a note
+  const editNote = async ( id, title, description, tag ) => {
+    //Api Call
+    const response = await fetch(`${host}/api/notes/update/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem('token'),
+      },
+      body: JSON.stringify({ title, description, tag }), // body data type must match "Content-Type" header
+    });
+
+    const json = await response.json(); 
+    console.log(json);
+
+    let newNotes=JSON.parse(JSON.stringify(notes)) //make a deep copy of notes object
+    //updation
+    for (let index = 0; index < newNotes.length; index++) {
+      const element = newNotes[index];
+      if (element._id === id) {
+        newNotes[index].title = title;
+        newNotes[index].description = description;
+        newNotes[index].tag = tag;
+        break;
+      }
     }
-    //delete a note
-    const deleteNote=(id)=>{
-      console.log('deleting...'+id);
-      //use filter method to remove the note with the id passed
-      const newNotes= notes.filter((note)=> note._id!==id)  //so filter method pure notes array ko traverse krega or jin-jin note ki id not equal hai id given k un-unko ek array me dalkr vo array return krdega or hm us array ko setNotes me daldege
-      setNotes(newNotes)
-    }
-    //edit a note
-    const editNote=(id)=>{
-      
-    }
+    setNotes(newNotes)
+  }
+
   return (
     <>
-    <NoteContext.Provider value={{notes,addNote,deleteNote,editNote}}>
-    {/* NoteContext k andr jo koi bhi hoga vo access krpaega 'value' ko */}
-        {props.children}  
-    </NoteContext.Provider>
-
+      <NoteContext.Provider
+        value={{ notes, addNote, deleteNote, editNote, fetchNotes }}
+      >
+        {/* NoteContext k andr jo koi bhi hoga vo access krpaega 'value' ko */}
+        {props.children}
+      </NoteContext.Provider>
     </>
-  )
-}
+  );
+};
 
-export default NoteStates
+export default NoteStates;

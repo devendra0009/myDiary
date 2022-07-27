@@ -22,6 +22,7 @@ router.post(
   ],
   async (req, res) => {
     console.log(req.body);
+    let success=false
 
     //this gonna handle agr data validation me koi dikkt ati hai to
     const errors = validationResult(req);
@@ -56,7 +57,8 @@ router.post(
       //authToken user ki id se ban dia added with our JWT_SECRET 
       let authToken = jwt.sign(data, JWT_SECRET);
 
-      res.json({ authToken });
+      success=true
+      res.json({ success, authToken });
     } catch (err) {
       console.log(err.message);
       res.status(500).send("Some error occured");
@@ -74,6 +76,8 @@ router.post(
   ],
   async (req, res) => {
     console.log(req.body);
+
+    let success=false
 
     //this gonna handle agr data validation me koi dikkt ati hai to
     const errors = validationResult(req);
@@ -107,7 +111,8 @@ router.post(
       };
       let authToken = jwt.sign(data, JWT_SECRET);
 
-      res.json({ authToken });
+      success=true
+      res.json({ success, authToken });
     } catch (err) {
       console.log(err.message);
       res.status(500).send("Internal Server error occured!!");

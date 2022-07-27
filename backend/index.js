@@ -1,9 +1,13 @@
 const connectToMongo = require("./db.js");
 connectToMongo(); //to connecct to our mongodb database
 
+const cors=require('cors')
 const express = require("express");
 const app = express();
 const port = 5000;
+
+//to use cors
+app.use(cors())
 
 //middleware used to populate req.body() can be express.json() or express.urlencoded()
 // For parsing application/json-> express.json() used

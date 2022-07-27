@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import noteContext from "../context/notes/NoteContext";
 
-const NoteItem = ({ note }) => {
-  const context = useContext(noteContext) //to use delete and editNote function from contextApi
-    const {deleteNote,editNote}=context
+const NoteItem = ({ note, updateNote, showAlert }) => {
+  const context = useContext(noteContext); //to use delete and editNote function from contextApi
+  const { deleteNote } = context;
 
   return (
     <div className="card mx-2 my-2" style={{ width: "18rem" }}>
@@ -19,10 +19,21 @@ const NoteItem = ({ note }) => {
             id="flexCheckDefault"
           />
           <label className="form-check-label" htmlFor="flexCheckDefault">
-            Done Task 
+            Done Task
           </label>
-        <i className="fas fa-solid fa-trash mx-3" onClick={()=>{deleteNote(note._id)}}></i>
-        <i className="fas fa-edit  mx-3"></i>
+          <i
+            className="fas fa-solid fa-trash mx-3"
+            onClick={() => {
+              deleteNote(note._id);
+              showAlert("success","Note Deleted SuccessFully!!")
+            }}
+          ></i>
+          <i
+            className="fas fa-edit  mx-3"
+            onClick={() => {
+              updateNote(note);
+            }}
+          ></i>
         </div>
       </div>
     </div>
